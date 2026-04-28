@@ -474,3 +474,5 @@ pytest changedetectionio\tests\unit\test_time_handler.py::TestAmIInsideTime::tes
 ## Итог
 
 Для абсолютного новичка этот проект был бы слишком большим. Для разработчика C#/JS/TS он подходит хорошо: знакомые архитектурные идеи помогут не утонуть, а Python будет изучаться на реальных задачах. Лучший подход - не читать проект линейно, а идти по вертикальным срезам: endpoint, test, model, persistence, worker, processor.
+
+last update: 2026-04-28
