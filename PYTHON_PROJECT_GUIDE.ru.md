@@ -371,6 +371,81 @@ python .\changedetection.py --help
 python .\changedetection.py -d .\.dev-data -p 5000 -l DEBUG -u https://example.com
 ```
 
+## Как дебажить в VS Code
+
+Да, этот проект можно нормально отлаживать в VS Code: ставить breakpoint в Python-файлах, запускать приложение под debugger, смотреть переменные, call stack и шагать по коду.
+
+### 1. Подготовить VS Code
+
+Установить расширение Microsoft Python:
+
+- `Python`
+- `Pylance`
+
+Затем выбрать интерпретатор из виртуального окружения:
+
+```text
+Ctrl+Shift+P -> Python: Select Interpreter -> .\.venv\Scripts\python.exe
+```
+
+Если проект запускался без `.venv`, можно выбрать тот Python, в который были установлены зависимости через `pip install -r requirements.txt`. Но для обучения и отладки лучше использовать отдельное виртуальное окружение.
+
+### 2. Создать `.vscode/launch.json`
+
+В корне проекта создать файл `.vscode/launch.json`:
+
+```json
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Debug changedetection.io",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/changedetection.py",
+      "args": [
+        "-d",
+        "${workspaceFolder}/.dev-data",
+        "-p",
+        "5000",
+        "-l",
+        "DEBUG"
+      ],
+      "console": "integratedTerminal",
+      "justMyCode": false
+    }
+  ]
+}
+```
+
+`justMyCode: false` полезен для изучения проекта: debugger сможет заходить не только в твой код, но и в код зависимостей/фреймворка, если это нужно. Если хочется меньше шума, можно поставить `true`.
+
+### 3. Запустить отладку
+
+1. Поставить breakpoint, например в `changedetectionio/__init__.py`, `changedetectionio/flask_app.py` или `changedetectionio/blueprint/ui/views.py`.
+2. Открыть вкладку Run and Debug в VS Code.
+3. Выбрать `Debug changedetection.io`.
+4. Нажать Start Debugging.
+5. Открыть в браузере:
+
+```text
+http://127.0.0.1:5000
+```
+
+Когда запрос попадет в код с breakpoint, VS Code остановит выполнение.
+
+### 4. Где удобно ставить breakpoint
+
+- `changedetection.py` - самый внешний wrapper запуска.
+- `changedetectionio/__init__.py` - разбор аргументов и запуск приложения.
+- `changedetectionio/flask_app.py` - создание Flask app и регистрация routes.
+- `changedetectionio/blueprint/ui/views.py` - UI routes.
+- `changedetectionio/api/*.py` - API endpoints.
+- `changedetectionio/worker.py` - background processing.
+- `changedetectionio/processors/*` - обработка полученного контента.
+
+Практичный первый сценарий: поставить breakpoint в `changedetectionio/blueprint/ui/views.py`, открыть главную страницу и посмотреть, как Flask route превращается в HTML response.
+
 ## Как запускать тесты
 
 Все тесты:
